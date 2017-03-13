@@ -1,0 +1,964 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>segmentationautomation</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-08-02"><meta name="DC.source" content="segmentationautomation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#3">Parse the optional inputs.</a></li><li><a href="#4">Create the figure.</a></li><li><a href="#5">Store the inputs.</a></li><li><a href="#6">Nested function to select a folder</a></li><li><a href="#8">Get the folder to process.</a></li><li><a href="#9">Update the folder text box.</a></li><li><a href="#11">Nested function to process the Imaris files</a></li><li><a href="#13">Get all the Imaris files in the folder.</a></li><li><a href="#14">Connect to Imaris.</a></li><li><a href="#15">Setup the progress bar.</a></li><li><a href="#16">Segment the contacts in all the files.</a></li><li><a href="#17">Record the start time for processing.</a></li><li><a href="#18">Load the data file into the connected Imaris instance.</a></li><li><a href="#19">Get the data set properties.</a></li><li><a href="#20">Identify the channels. (1-based indices)</a></li><li><a href="#21">Use the first contour channel. If there is no contour channel, continue.</a></li><li><a href="#22">Get the movie images.</a></li><li><a href="#23">Crop the images to the cell path.</a></li><li><a href="#24">Expand the contour slightly.</a></li><li><a href="#25">Create a filtering kernel to smooth the data.</a></li><li><a href="#26">Detect regional minima and contour the holes.</a></li><li><a href="#27">Transfer the contacts to Imaris as spots.</a></li><li><a href="#28">Save the processed file.</a></li><li><a href="#29">Update the status bar and estimate the time required to finish.</a></li><li><a href="#31">Reset the status bar.</a></li><li><a href="#35">Close the image display figure if open, the close the gui figure.</a></li></ul></div><pre class="codeinput"><span class="keyword">function</span> segmentationautomation(varargin)
+</pre><pre class="codeinput">    <span class="comment">% SEGMENTATIONAUTOMATION Automated identification of contact</span>
+    <span class="comment">% zones</span>
+    <span class="comment">%</span>
+    <span class="comment">% Syntax</span>
+    <span class="comment">% ------</span>
+    <span class="comment">% CONTACTAUTOMATION prompts the user to select a folder with Imaris</span>
+    <span class="comment">% data to process. A new Imaris instance is opened to load and process</span>
+    <span class="comment">% the data.</span>
+    <span class="comment">%</span>
+    <span class="comment">% CONTACTAUTOMATION(strFolder) processes Imaris files in the folder</span>
+    <span class="comment">% indicated by the fully qualified path string strFolder. If the folder</span>
+    <span class="comment">% indicated by strFolder does not exist, the function errors and exits.</span>
+    <span class="comment">%</span>
+    <span class="comment">% CONTACTAUTOMATION(strFolder, imarisID) connects to the Imaris</span>
+    <span class="comment">% instance specified by imarisID. The imarisID input can be zero or</span>
+    <span class="comment">% positive-valued integer. If no running instance of Imaris has an ID</span>
+    <span class="comment">% equal to imarisID, a new instance will be created with the specified</span>
+    <span class="comment">% ID.</span>
+    <span class="comment">%</span>
+    <span class="comment">% &copy;2014, P. Beemiller. Licensed under a Creative Commmons Attribution</span>
+    <span class="comment">% license. See: http://creativecommons.org/licenses/by/3.0/</span>
+</pre><h2>Parse the optional inputs.<a name="3"></a></h2><pre class="codeinput">    segmentationautomationParser = inputParser;
+    segmentationautomationParser.addOptional(<span class="string">'xFolder'</span>, <span class="string">''</span>, @(arg)exist(<span class="string">'arg'</span>, <span class="string">'dir'</span>))
+    segmentationautomationParser.addOptional(<span class="string">'xImarisID'</span>, <span class="string">''</span>, <span class="keyword">...</span>
+        @(arg)<span class="keyword">...</span>
+        (isnumeric(arg) &amp;&amp; rem(arg, 1) == 0) || <span class="keyword">...</span>
+        (~isnan(str2double(arg)) &amp;&amp; rem(str2double(arg), 1) == 0))
+    parse(segmentationautomationParser, varargin{:})
+
+    xFolder = segmentationautomationParser.Results.xFolder;
+    xImarisID = segmentationautomationParser.Results.xImarisID;
+</pre><h2>Create the figure.<a name="4"></a></h2><pre class="codeinput">    desktopPos = get(0, <span class="string">'MonitorPositions'</span>);
+    guiWidth = 552;
+    guiHeight = 361;
+    figPos = [<span class="keyword">...</span>
+        (desktopPos(1, 3) - guiWidth)/2, <span class="keyword">...</span>
+        (desktopPos(1, 4) - guiHeight)/2, <span class="keyword">...</span>
+        guiWidth, <span class="keyword">...</span>
+        guiHeight];
+
+    guiSegmentation = figure(<span class="keyword">...</span>
+        <span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'CloseRequestFcn'</span>, {@closecontactautomationfcn}, <span class="keyword">...</span>
+        <span class="string">'MenuBar'</span>, <span class="string">'None'</span>, <span class="keyword">...</span>
+        <span class="string">'Name'</span>, <span class="string">'Contact segmentation'</span>, <span class="keyword">...</span>
+        <span class="string">'NumberTitle'</span>, <span class="string">'Off'</span>, <span class="keyword">...</span>
+        <span class="string">'Position'</span>, figPos, <span class="keyword">...</span>
+        <span class="string">'Resize'</span>, <span class="string">'Off'</span>, <span class="keyword">...</span>
+        <span class="string">'Tag'</span>, <span class="string">'guiSegmentation'</span>);
+
+    <span class="comment">% Create the open and process buttons.</span>
+    uicontrol(<span class="keyword">...</span>
+        <span class="string">'Background'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'Callback'</span>, {@pushfolderopen, guiSegmentation}, <span class="keyword">...</span>
+        <span class="string">'FontSize'</span>, 12, <span class="keyword">...</span>
+        <span class="string">'Foreground'</span>, <span class="string">'w'</span>, <span class="keyword">...</span>
+        <span class="string">'Position'</span>, [20 324 75 24], <span class="keyword">...</span>
+        <span class="string">'String'</span>, <span class="string">'Folder'</span>, <span class="keyword">...</span>
+        <span class="string">'Style'</span>, <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
+        <span class="string">'Tag'</span>, <span class="string">'pushOpen'</span>, <span class="keyword">...</span>
+        <span class="string">'TooltipString'</span>, <span class="string">'Open a folder with Imaris data'</span>);
+
+    uicontrol(<span class="keyword">...</span>
+        <span class="string">'Background'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'Callback'</span>, {@pushfolderprocess, guiSegmentation}, <span class="keyword">...</span>
+        <span class="string">'FontSize'</span>, 12, <span class="keyword">...</span>
+        <span class="string">'Foreground'</span>, <span class="string">'w'</span>, <span class="keyword">...</span>
+        <span class="string">'Position'</span>, [457 324 75 24], <span class="keyword">...</span>
+        <span class="string">'String'</span>, <span class="string">'Process'</span>, <span class="keyword">...</span>
+        <span class="string">'Style'</span>, <span class="string">'pushbutton'</span>, <span class="keyword">...</span>
+        <span class="string">'Tag'</span>, <span class="string">'pushProcess'</span>, <span class="keyword">...</span>
+        <span class="string">'TooltipString'</span>, <span class="string">'Process all Imaris files in the folder'</span>);
+
+    <span class="comment">% Create a uicontrol to display the selected folder.</span>
+    textFolder = uicontrol(<span class="keyword">...</span>
+        <span class="string">'Background'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'FontSize'</span>, 10, <span class="keyword">...</span>
+        <span class="string">'Foreground'</span>, <span class="string">'w'</span>, <span class="keyword">...</span>
+        <span class="string">'HorizontalAlignment'</span>, <span class="string">'Left'</span>, <span class="keyword">...</span>
+        <span class="string">'Position'</span>, [115 320 322 24], <span class="keyword">...</span>
+        <span class="string">'String'</span>, <span class="string">''</span>, <span class="keyword">...</span>
+        <span class="string">'Style'</span>, <span class="string">'text'</span>, <span class="keyword">...</span>
+        <span class="string">'Tag'</span>, <span class="string">'textFolder'</span>);
+
+    <span class="comment">% Create the display axes.</span>
+    axesContours = axes(<span class="keyword">...</span>
+        <span class="string">'Units'</span>, <span class="string">'Pixels'</span>, <span class="keyword">...</span>
+        <span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'Parent'</span>, guiSegmentation, <span class="keyword">...</span>
+        <span class="string">'Position'</span>, [20 40 512 256], <span class="keyword">...</span>
+        <span class="string">'XColor'</span>, <span class="string">'k'</span>, <span class="keyword">...</span>
+        <span class="string">'YColor'</span>, <span class="string">'k'</span>);
+
+    <span class="comment">% Setup the status bar.</span>
+    hStatus = statusbar(guiSegmentation, xFolder);
+    hStatus.CornerGrip.setVisible(false)
+
+    hStatus.ProgressBar.setForeground(java.awt.Color.black)
+    hStatus.ProgressBar.setString(<span class="string">''</span>)
+    hStatus.ProgressBar.setStringPainted(true)
+</pre><img vspace="5" hspace="5" src="segmentationautomation_01.png" alt=""> <h2>Store the inputs.<a name="5"></a></h2><pre class="codeinput">    setappdata(guiSegmentation, <span class="string">'xFolder'</span>, xFolder)
+    setappdata(guiSegmentation, <span class="string">'xImarisID'</span>, xImarisID)
+</pre><h2>Nested function to select a folder<a name="6"></a></h2><pre class="codeinput">    <span class="keyword">function</span> pushfolderopen(varargin)
+</pre><pre class="codeinput">        <span class="comment">% PUSHOPEN Select a folder with data to process</span>
+        <span class="comment">%</span>
+        <span class="comment">%</span>
+</pre><h2>Get the folder to process.<a name="8"></a></h2><pre class="codeinput">        xFolder = getappdata(guiSegmentation, <span class="string">'xFolder'</span>);
+        xFolder = uigetdir(xFolder);
+        setappdata(guiSegmentation, <span class="string">'xFolder'</span>, xFolder)
+</pre><h2>Update the folder text box.<a name="9"></a></h2><pre class="codeinput">        slashIdxs = strfind(xFolder, filesep);
+        folderEnd = xFolder(slashIdxs(end - 1) + 1:end);
+        set(textFolder, <span class="string">'String'</span>, [<span class="string">'...\'</span> folderEnd])
+</pre><pre class="codeinput">    <span class="keyword">end</span> <span class="comment">% pushfolderopen</span>
+</pre><h2>Nested function to process the Imaris files<a name="11"></a></h2><pre class="codeinput">    <span class="keyword">function</span> pushfolderprocess(varargin)
+</pre><pre class="codeinput">        <span class="comment">% PUSHFOLDERPROCESS Process the Imaris files in the selected folder.</span>
+        <span class="comment">%</span>
+        <span class="comment">%</span>
+</pre><h2>Get all the Imaris files in the folder.<a name="13"></a></h2><pre class="codeinput">        xFolder = getappdata(guiSegmentation, <span class="string">'xFolder'</span>);
+        xFiles = dir(fullfile(xFolder, <span class="string">'*.ims'</span>));
+
+        <span class="keyword">if</span> isequal(xFolder, 0) || isempty(xFiles)
+            <span class="keyword">return</span>
+        <span class="keyword">end</span> <span class="comment">% if</span>
+
+        fStartTime = zeros(length(xFiles), 1);
+</pre><h2>Connect to Imaris.<a name="14"></a></h2><pre class="codeinput">        xImarisID = getappdata(guiSegmentation, <span class="string">'xImarisID'</span>);
+        <span class="keyword">if</span> ~isempty(xImarisID)
+            xImarisApp = xtconnectimaris(xImarisID);
+
+        <span class="keyword">else</span>
+            [xImarisApp, xImarisID] = xtconnectimaris;
+            setappdata(guiSegmentation, <span class="string">'xImarisID'</span>, xImarisID)
+
+        <span class="keyword">end</span> <span class="comment">% if</span>
+</pre><h2>Setup the progress bar.<a name="15"></a></h2><pre class="codeinput">        hStatus.ProgressBar.setVisible(true)
+        hStatus.ProgressBar.setMaximum(length(xFiles))
+        completionEstimate = <span class="string">'N/A'</span>;
+</pre><h2>Segment the contacts in all the files.<a name="16"></a></h2><pre class="codeinput">        <span class="keyword">for</span> f = 1:length(xFiles)
+</pre><h2>Record the start time for processing.<a name="17"></a></h2><pre class="codeinput">            fStartTime(f) = datenum(datetime(<span class="string">'now'</span>));
+</pre><h2>Load the data file into the connected Imaris instance.<a name="18"></a></h2><pre class="codeinput">            xImarisApp.FileOpen(fullfile(xFolder, xFiles(f).name), <span class="string">'reader="Imaris5"'</span>);
+</pre><h2>Get the data set properties.<a name="19"></a></h2><pre class="codeinput">            [~, fFileName, ~] = fileparts(char(xImarisApp.GetCurrentFileName));
+            hStatus.setText([<span class="string">'Processing: '</span> fFileName <span class="string">' | Estimated finish: '</span> completionEstimate])
+
+            <span class="comment">% Get the data set dimensions.</span>
+            xDataSet = xImarisApp.GetDataSet;
+
+            xSize = xDataSet.GetSizeX;
+
+            ySize = xDataSet.GetSizeY;
+            yMax = xDataSet.GetExtendMaxY;
+
+            cSize = xDataSet.GetSizeC;
+            tSize = xDataSet.GetSizeT;
+</pre><h2>Identify the channels. (1-based indices)<a name="20"></a></h2><pre class="codeinput">            channelNames = cell(cSize, 1);
+            <span class="keyword">for</span> c = 1:cSize
+                channelNames{c} = char(xDataSet.GetChannelName(c - 1));
+            <span class="keyword">end</span> <span class="comment">% for c</span>
+
+            qdotChannel = find(~cellfun(@isempty, <span class="keyword">...</span>
+                regexp(channelNames, <span class="string">'^(Q(D|d)ot)'</span>, <span class="string">'Match'</span>, <span class="string">'Once'</span>)));
+            contourChannel = find(~cellfun(@isempty, <span class="keyword">...</span>
+                regexp(channelNames, <span class="string">'(C|c)ontours'</span>, <span class="string">'Match'</span>, <span class="string">'Once'</span>)));
+</pre><h2>Use the first contour channel. If there is no contour channel, continue.<a name="21"></a></h2><pre class="codeinput">            <span class="keyword">if</span> length(contourChannel) &gt; 1;
+                contourChannel = contourChannel(1);
+
+            <span class="keyword">elseif</span> isempty(contourChannel)
+                <span class="keyword">continue</span>
+
+            <span class="keyword">end</span> <span class="comment">% if</span>
+</pre><h2>Get the movie images.<a name="22"></a></h2><pre class="codeinput">            qdotImage = zeros(1, ySize*xSize, tSize);
+            contourImage = false(1, ySize*xSize, tSize);
+
+            <span class="keyword">for</span> t = 1:tSize;
+                <span class="comment">% Get the qdot image.</span>
+                qdotSlice = double(<span class="keyword">...</span>
+                    xDataSet.GetDataVolumeAs1DArrayShorts(qdotChannel - 1, t - 1));
+                qdotImage(:, :, t) = qdotSlice;
+
+                <span class="comment">% Get the contour slice.</span>
+                contourSlice = logical(<span class="keyword">...</span>
+                    xDataSet.GetDataVolumeAs1DArrayShorts(contourChannel - 1, t - 1));
+                contourImage(:, :, t) = contourSlice;
+            <span class="keyword">end</span> <span class="comment">% for t</span>
+
+            qdotImage = rot90(reshape(qdotImage, [xSize, ySize, tSize]), 1);
+            contourImage = rot90(reshape(contourImage, [xSize, ySize, tSize]), 1);
+</pre><h2>Crop the images to the cell path.<a name="23"></a></h2><pre class="codeinput">            contourProjection = sum(uint8(contourImage), 3) &gt; 0;
+            projectionRgnProps = regionprops(contourProjection, <span class="string">'BoundingBox'</span>);
+            rectPos = [projectionRgnProps.BoundingBox];
+
+            cropXs(1) = max([1, floor(rectPos(1)) - 10]);
+            cropXs(2) = cropXs(1) + floor(rectPos(3)) + 19;
+            cropXs(2) = min([xSize, cropXs(2) + (rem(diff(cropXs), 2) - 1)]);
+
+            cropYs(1) = max([1, floor(rectPos(2)) - 10]);
+            cropYs(2) = cropYs(1) + floor(rectPos(4)) + 19;
+            cropYs(2) = min([ySize, cropYs(2) + (rem(diff(cropYs), 2) - 1)]);
+
+            qdotCropped = qdotImage(cropYs(1):cropYs(2), cropXs(1):cropXs(2), :);
+
+            <span class="comment">% Normalize the images to the intensity range in the cell region.</span>
+            qdotRange = [min(qdotCropped(:)) max(qdotCropped(:))];
+            qdotNormalized = (qdotImage - qdotRange(1))/(qdotRange(2) - qdotRange(1));
+</pre><h2>Expand the contour slightly.<a name="24"></a></h2><pre class="codeinput">            contourExpanded = false(size(contourImage));
+            <span class="keyword">for</span> t = 1:tSize
+                contourDistance = 0.1*bwdist(contourImage(:, :, t));
+                contourExpanded(:, :, t) = contourDistance &lt; 0.25;
+            <span class="keyword">end</span> <span class="comment">% for t</span>
+</pre><h2>Create a filtering kernel to smooth the data.<a name="25"></a></h2><pre class="codeinput">            cKernel = fspecial(<span class="string">'gaussian'</span>, [7 7], 1);
+</pre><h2>Detect regional minima and contour the holes.<a name="26"></a></h2><p>Contacts segmentation results are stored as the output of regionprops.</p><pre class="codeinput">            cellContacts = cell(1, tSize);
+
+            <span class="keyword">for</span> t = 1:tSize;
+                <span class="comment">% If the cell is not bound in the frame, continue.</span>
+                tContour = contourExpanded(:, :, t);
+                <span class="keyword">if</span> ~any(tContour(:))
+                    <span class="keyword">continue</span>
+                <span class="keyword">end</span> <span class="comment">% if</span>
+
+                <span class="comment">% Filter and detect maxima.</span>
+                tQDot = qdotNormalized(:, :, t);
+                tRgnMin = imregionalmin(imfilter(tQDot, cKernel, <span class="string">'Symmetric'</span>)) &amp; <span class="keyword">...</span>
+                    tContour &amp; <span class="keyword">...</span>
+                    tQDot &lt; median(tQDot(:));
+                tContacts = regionprops(tRgnMin, <span class="string">'Area'</span>, <span class="string">'Centroid'</span>, <span class="string">'PixelIdxList'</span>);
+
+                <span class="comment">% Dilate and contour the seed points.</span>
+                <span class="keyword">for</span> s = 1:length(tContacts)
+                    <span class="comment">% Create the input mask.</span>
+                    sPhi = false(size(tQDot));
+                    sPhi(floor(tContacts(s).Centroid(2)), floor(tContacts(s).Centroid(1))) = 1;
+                    sPhi = imdilate(sPhi, strel(<span class="string">'disk'</span>, 1));
+
+                    <span class="comment">% Contour.</span>
+                    sPhi = activecontour(qdotNormalized(:, :, t), sPhi, 5, <span class="string">'Chan-Vese'</span>, <span class="keyword">...</span>
+                        <span class="string">'ContractionBias'</span>, 0, <span class="keyword">...</span>
+                        <span class="string">'SmoothFactor'</span>, 0);
+
+                    <span class="comment">% Get the region properties.</span>
+                    sContact = regionprops(sPhi, <span class="string">'Area'</span>, <span class="string">'Centroid'</span>, <span class="string">'PixelIdxList'</span>);
+                    <span class="keyword">if</span> ~isempty(sContact)
+                        <span class="keyword">if</span> length(sContact) == 1 &amp;&amp; sContact.Area &gt; 5
+                            tContacts(s) = deal(sContact);
+
+                        <span class="keyword">else</span> <span class="comment">% The region has fragmented into sub-regions. Keep the largest region.</span>
+                            idxPrimaryRgn = find([sContact.Area] == max([sContact.Area]), 1);
+                            sContact = sContact(idxPrimaryRgn);
+                            <span class="keyword">if</span> sContact.Area &gt; 5
+                                tContacts(s) = deal(sContact);
+                            <span class="keyword">end</span> <span class="comment">% if</span>
+
+                        <span class="keyword">end</span> <span class="comment">% if</span>
+                    <span class="keyword">end</span> <span class="comment">% if</span>
+                <span class="keyword">end</span> <span class="comment">% for s</span>
+
+                <span class="comment">% Remove the isolated minima.</span>
+                tContacts = tContacts([tContacts.Area] &gt; 5);
+
+                <span class="comment">% Merge overlapping regions. Use 50% overlap as a merge critera.</span>
+                <span class="keyword">for</span> s = 1:length(tContacts)
+                    <span class="comment">% Get the segmentation data.</span>
+                    sProps = tContacts(s);
+
+                    <span class="comment">% If we've merged this region already, move on.</span>
+                    <span class="keyword">if</span> isempty(sProps.Centroid)
+                        <span class="keyword">continue</span>
+                    <span class="keyword">end</span> <span class="comment">% if</span>
+
+                    <span class="comment">% Create the list of regions to test. Do not search the</span>
+                    <span class="comment">% region itself and do not search regions that have</span>
+                    <span class="comment">% been merged with a lower index region.</span>
+                    pIdxs = 1:length(tContacts);
+                    pIdxs(s) = nan;
+                    pIdxs(arrayfun(@(s)isempty(s.Centroid), tContacts)) = nan;
+                    pIdxs(isnan(pIdxs)) = [];
+
+                    <span class="comment">% Check each target for overlap.</span>
+                    <span class="keyword">for</span> p = pIdxs
+                        <span class="comment">% Get the overlapping pixels.</span>
+                        pProps = tContacts(p);
+                        idxOverlap = ismember(sProps.PixelIdxList, pProps.PixelIdxList);
+
+                        <span class="keyword">if</span> ~any(idxOverlap(:))
+                            <span class="keyword">continue</span>
+
+                        <span class="keyword">else</span>
+                            <span class="comment">% Quantify the overlap.</span>
+                            oMask = false(size(sPhi));
+                            oMask(sProps.PixelIdxList(idxOverlap)) = 1;
+                            oProps = regionprops(oMask, <span class="string">'Area'</span>);
+                            oArea = sum([oProps.Area]);
+
+                            <span class="comment">% Determine whether to merge.</span>
+                            <span class="keyword">if</span> oArea/sProps.Area &gt;= 0.5 || oArea/pProps.Area &gt;= 0.5
+                                <span class="comment">% Create the merged region.</span>
+                                cMask = false(size(sPhi));
+                                cMask([sProps.PixelIdxList; pProps.PixelIdxList]) = 1;
+                                sProps = regionprops(cMask, <span class="string">'Area'</span>, <span class="string">'Centroid'</span>, <span class="string">'PixelIdxList'</span>);
+
+                                <span class="comment">% Delete the centroid data for the region</span>
+                                <span class="comment">% we merged in, so we skip over it when we</span>
+                                <span class="comment">% reach it in the loop.</span>
+                                <span class="keyword">if</span> s &lt; p
+                                    <span class="comment">% The p-index region is now merged into the</span>
+                                    <span class="comment">% s-index region. Remove the centroid value for p</span>
+                                    <span class="comment">% and update s.</span>
+                                    tContacts(p).Centroid = [];
+                                    tContacts(s) = sProps;
+
+                                <span class="keyword">else</span>
+                                    <span class="comment">% The s-index region is now merged into</span>
+                                    <span class="comment">% the p-index region. Remove the</span>
+                                    <span class="comment">% centroid value for s and update p.</span>
+                                    <span class="comment">% Break out of the p loop, as s is now</span>
+                                    <span class="comment">% invalid.</span>
+                                    tContacts(p) = sProps;
+                                    tContacts(s).Centroid = [];
+                                    <span class="keyword">break</span>
+
+                                <span class="keyword">end</span> <span class="comment">% if</span>
+                            <span class="keyword">end</span> <span class="comment">% if</span>
+
+                        <span class="keyword">end</span> <span class="comment">%if</span>
+                    <span class="keyword">end</span> <span class="comment">% for p</span>
+                <span class="keyword">end</span> <span class="comment">% for s</span>
+
+                <span class="comment">% Remove the regions that are now merged into other regions.</span>
+                mergedRgnIdxs = arrayfun(@(s)isempty(s.Centroid), tContacts);
+                tContacts(mergedRgnIdxs) = [];
+
+                <span class="comment">% Assign Spot IDs to match Imaris and add to contact cell</span>
+                <span class="comment">% array.</span>
+                rgnCount = sum(cellfun(@length, cellContacts));
+                iSpotIDs = num2cell(rgnCount:rgnCount + length(tContacts) - 1);
+                [tContacts.ID] = deal(iSpotIDs{:});
+                cellContacts{t} = tContacts;
+
+                <span class="comment">% Create the all-contacts mask.</span>
+                tMask = false(size(tQDot));
+                tMask(vertcat(tContacts.PixelIdxList)) = true;
+
+                <span class="comment">% Display the slice.</span>
+                cla(axesContours)
+                imshow(ind2rgb(gray2ind(tQDot, 256), colorramp(<span class="string">'o'</span>, 256, <span class="string">'k'</span>)), <span class="keyword">...</span>
+                    <span class="string">'Parent'</span>, axesContours)
+                <span class="comment">% imshow(tQDot, [], 'Parent', axesContours)</span>
+                set(axesContours, <span class="string">'NextPlot'</span>, <span class="string">'Add'</span>)
+
+                <span class="comment">% Draw the cell border.</span>
+                contour(axesContours, contourExpanded(:, :, t), [1 1], <span class="string">'Color'</span>, [0 0.5 1])
+
+                <span class="comment">% Draw the new regions on the preview image.</span>
+                contour(axesContours, tMask &gt; 0, [1 1], <span class="string">'g'</span>)
+
+                title(axesContours, [<span class="string">'Time point '</span> num2str(t) <span class="string">' of '</span> num2str(tSize)], <span class="keyword">...</span>
+                    <span class="string">'Color'</span>, <span class="string">'w'</span>)
+                drawnow
+            <span class="keyword">end</span> <span class="comment">% for t</span>
+
+            <span class="comment">% Save the contact data.</span>
+            save(fullfile(xFolder, [<span class="string">'Contacts '</span> fFileName, <span class="string">'.mat'</span>]), <span class="string">'cellContacts'</span>)
+</pre><h2>Transfer the contacts to Imaris as spots.<a name="27"></a></h2><p>Allocate arrays for the spots.</p><pre class="codeinput">            countSpots = sum(cellfun(@length, cellContacts));
+
+            posSpots = zeros(countSpots, 3, <span class="string">'single'</span>);
+            timeSpots = zeros(countSpots, 1, <span class="string">'int32'</span>);
+            radiiSpots = zeros(countSpots, 1, <span class="string">'single'</span>);
+
+            rStart = 1;
+            <span class="keyword">for</span> t = 1:length(cellContacts)
+                tContacts = cellContacts{t};
+                <span class="keyword">if</span> isempty(tContacts)
+                    <span class="keyword">continue</span>
+                <span class="keyword">end</span> <span class="comment">% if</span>
+
+                tSpotCount = length(tContacts);
+                rEnd = rStart + tSpotCount - 1;
+
+                posXYImaris = 0.1*(vertcat(tContacts.Centroid));
+                posXYImaris(:, 2) = yMax - posXYImaris(:, 2);
+                posSpots(rStart:rEnd, 1:2) = posXYImaris;
+                posSpots(rStart:rEnd, 3) = 0.5;
+                timeSpots(rStart:rEnd) = t - 1;
+                radiiSpots(rStart:rEnd) = 0.1*sqrt([tContacts.Area]/pi);
+
+                rStart = rStart + tSpotCount;
+            <span class="keyword">end</span> <span class="comment">% for t</span>
+
+            <span class="comment">% Create and place the spots object.</span>
+            xSpots = xImarisApp.GetFactory.CreateSpots;
+            xSpots.Set(posSpots, timeSpots, radiiSpots);
+            xSpots.SetName(<span class="string">'Contacts'</span>)
+            xSpots.SetColorRGBA(rgbtripleto24bit([0 0.5 1]))
+            xImarisApp.GetSurpassScene.AddChild(xSpots, -1)
+</pre><h2>Save the processed file.<a name="28"></a></h2><pre class="codeinput">            xImarisApp.FileSave(fullfile(xFolder, xFiles(f).name), <span class="string">'writer="Imaris5"'</span>)
+</pre><h2>Update the status bar and estimate the time required to finish.<a name="29"></a></h2><pre class="codeinput">            timeElapsed = datenum(datetime(<span class="string">'now'</span>)) - fStartTime(1);
+            completionEstimate = datestr(datenum(datetime(<span class="string">'now'</span>)) + <span class="keyword">...</span>
+                timeElapsed/f*(length(xFiles) - f), <span class="string">'HH:MM PM'</span>);
+
+            hStatus.setText([<span class="string">'Processing: '</span> fFileName <span class="string">' | Estimated finish: '</span> completionEstimate])
+            hStatus.ProgressBar.setValue(f)
+</pre><pre class="codeinput">        <span class="keyword">end</span> <span class="comment">% for f</span>
+</pre><h2>Reset the status bar.<a name="31"></a></h2><pre class="codeinput">        hStatus.setText(<span class="string">'Finished processing folder'</span>)
+        hStatus.ProgressBar.setValue(0)
+        hStatus.ProgressBar.setVisible(0)
+</pre><pre class="codeinput">    <span class="keyword">end</span> <span class="comment">% pushfolderprocess</span>
+</pre><pre class="codeinput"><span class="keyword">end</span> <span class="comment">% contactsegmentationautomation</span>
+
+
+<span class="keyword">function</span> closecontactautomationfcn(guiContactSegmentation, ~)
+</pre><pre class="codeinput">    <span class="comment">% CLOSECONTACTAUTOMATIONFCN Close the GUI and figure window</span>
+    <span class="comment">%</span>
+    <span class="comment">%</span>
+</pre><h2>Close the image display figure if open, the close the gui figure.<a name="35"></a></h2><pre class="codeinput">    figContours = getappdata(guiContactSegmentation, <span class="string">'figContours'</span>);
+    <span class="keyword">if</span> ishandle(figContours)
+        delete(figContours)
+    <span class="keyword">end</span> <span class="comment">% if</span>
+
+    delete(guiContactSegmentation)
+</pre><pre class="codeinput"><span class="keyword">end</span> <span class="comment">% closecontactautomationfcn</span>
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function segmentationautomation(varargin)
+    % SEGMENTATIONAUTOMATION Automated identification of contact
+    % zones
+    %
+    % Syntax
+    % REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH
+    % CONTACTAUTOMATION prompts the user to select a folder with Imaris
+    % data to process. A new Imaris instance is opened to load and process
+    % the data.
+    %
+    % CONTACTAUTOMATION(strFolder) processes Imaris files in the folder
+    % indicated by the fully qualified path string strFolder. If the folder
+    % indicated by strFolder does not exist, the function errors and exits.
+    %
+    % CONTACTAUTOMATION(strFolder, imarisID) connects to the Imaris
+    % instance specified by imarisID. The imarisID input can be zero or
+    % positive-valued integer. If no running instance of Imaris has an ID
+    % equal to imarisID, a new instance will be created with the specified
+    % ID.
+    % 
+    % ©2014, P. Beemiller. Licensed under a Creative Commmons Attribution
+    % license. See: http://creativecommons.org/licenses/by/3.0/
+    
+    %% Parse the optional inputs.
+    segmentationautomationParser = inputParser;
+    segmentationautomationParser.addOptional('xFolder', '', @(arg)exist('arg', 'dir'))
+    segmentationautomationParser.addOptional('xImarisID', '', ...
+        @(arg)...
+        (isnumeric(arg) && rem(arg, 1) == 0) || ...
+        (~isnan(str2double(arg)) && rem(str2double(arg), 1) == 0))
+    parse(segmentationautomationParser, varargin{:})
+
+    xFolder = segmentationautomationParser.Results.xFolder;
+    xImarisID = segmentationautomationParser.Results.xImarisID;
+
+    %% Create the figure.
+    desktopPos = get(0, 'MonitorPositions');
+    guiWidth = 552;
+    guiHeight = 361;
+    figPos = [...
+        (desktopPos(1, 3) - guiWidth)/2, ...
+        (desktopPos(1, 4) - guiHeight)/2, ...
+        guiWidth, ...
+        guiHeight];
+    
+    guiSegmentation = figure(...
+        'Color', 'k', ...
+        'CloseRequestFcn', {@closecontactautomationfcn}, ...
+        'MenuBar', 'None', ...
+        'Name', 'Contact segmentation', ...
+        'NumberTitle', 'Off', ...
+        'Position', figPos, ...
+        'Resize', 'Off', ...
+        'Tag', 'guiSegmentation');
+    
+    % Create the open and process buttons.
+    uicontrol(...
+        'Background', 'k', ...
+        'Callback', {@pushfolderopen, guiSegmentation}, ...
+        'FontSize', 12, ...
+        'Foreground', 'w', ...
+        'Position', [20 324 75 24], ...
+        'String', 'Folder', ...
+        'Style', 'pushbutton', ...
+        'Tag', 'pushOpen', ...
+        'TooltipString', 'Open a folder with Imaris data');
+    
+    uicontrol(...
+        'Background', 'k', ...
+        'Callback', {@pushfolderprocess, guiSegmentation}, ...
+        'FontSize', 12, ...
+        'Foreground', 'w', ...
+        'Position', [457 324 75 24], ...
+        'String', 'Process', ...
+        'Style', 'pushbutton', ...
+        'Tag', 'pushProcess', ...
+        'TooltipString', 'Process all Imaris files in the folder');
+    
+    % Create a uicontrol to display the selected folder.
+    textFolder = uicontrol(...
+        'Background', 'k', ...
+        'FontSize', 10, ...
+        'Foreground', 'w', ...
+        'HorizontalAlignment', 'Left', ...
+        'Position', [115 320 322 24], ...
+        'String', '', ...
+        'Style', 'text', ...
+        'Tag', 'textFolder');
+    
+    % Create the display axes.
+    axesContours = axes(...
+        'Units', 'Pixels', ...
+        'Color', 'k', ...
+        'Parent', guiSegmentation, ...
+        'Position', [20 40 512 256], ...
+        'XColor', 'k', ...
+        'YColor', 'k');
+    
+    % Setup the status bar.
+    hStatus = statusbar(guiSegmentation, xFolder);
+    hStatus.CornerGrip.setVisible(false)
+    
+    hStatus.ProgressBar.setForeground(java.awt.Color.black)
+    hStatus.ProgressBar.setString('')
+    hStatus.ProgressBar.setStringPainted(true)
+    
+    %% Store the inputs.
+    setappdata(guiSegmentation, 'xFolder', xFolder)
+    setappdata(guiSegmentation, 'xImarisID', xImarisID)
+
+    %% Nested function to select a folder
+    function pushfolderopen(varargin)
+        % PUSHOPEN Select a folder with data to process
+        %
+        %
+            
+        %% Get the folder to process.
+        xFolder = getappdata(guiSegmentation, 'xFolder');
+        xFolder = uigetdir(xFolder);
+        setappdata(guiSegmentation, 'xFolder', xFolder)
+        
+        %% Update the folder text box.
+        slashIdxs = strfind(xFolder, filesep);
+        folderEnd = xFolder(slashIdxs(end - 1) + 1:end);
+        set(textFolder, 'String', ['...\' folderEnd])
+    end % pushfolderopen
+    
+    %% Nested function to process the Imaris files
+    function pushfolderprocess(varargin)
+        % PUSHFOLDERPROCESS Process the Imaris files in the selected folder.
+        %
+        %
+
+        %% Get all the Imaris files in the folder.
+        xFolder = getappdata(guiSegmentation, 'xFolder');
+        xFiles = dir(fullfile(xFolder, '*.ims'));
+
+        if isequal(xFolder, 0) || isempty(xFiles)
+            return
+        end % if
+        
+        fStartTime = zeros(length(xFiles), 1);
+        
+        %% Connect to Imaris.
+        xImarisID = getappdata(guiSegmentation, 'xImarisID');
+        if ~isempty(xImarisID)
+            xImarisApp = xtconnectimaris(xImarisID);
+
+        else
+            [xImarisApp, xImarisID] = xtconnectimaris;
+            setappdata(guiSegmentation, 'xImarisID', xImarisID)
+            
+        end % if
+        
+        %% Setup the progress bar.
+        hStatus.ProgressBar.setVisible(true)
+        hStatus.ProgressBar.setMaximum(length(xFiles))
+        completionEstimate = 'N/A';
+        
+        %% Segment the contacts in all the files.
+        for f = 1:length(xFiles)
+            %% Record the start time for processing.
+            fStartTime(f) = datenum(datetime('now'));
+            
+            %% Load the data file into the connected Imaris instance.
+            xImarisApp.FileOpen(fullfile(xFolder, xFiles(f).name), 'reader="Imaris5"');
+
+            %% Get the data set properties.
+            [~, fFileName, ~] = fileparts(char(xImarisApp.GetCurrentFileName));
+            hStatus.setText(['Processing: ' fFileName ' | Estimated finish: ' completionEstimate])
+
+            % Get the data set dimensions.
+            xDataSet = xImarisApp.GetDataSet;
+
+            xSize = xDataSet.GetSizeX;
+
+            ySize = xDataSet.GetSizeY;
+            yMax = xDataSet.GetExtendMaxY;
+            
+            cSize = xDataSet.GetSizeC;
+            tSize = xDataSet.GetSizeT;
+
+            %% Identify the channels. (1-based indices)
+            channelNames = cell(cSize, 1);
+            for c = 1:cSize
+                channelNames{c} = char(xDataSet.GetChannelName(c - 1));
+            end % for c
+
+            qdotChannel = find(~cellfun(@isempty, ...
+                regexp(channelNames, '^(Q(D|d)ot)', 'Match', 'Once')));
+            contourChannel = find(~cellfun(@isempty, ...
+                regexp(channelNames, '(C|c)ontours', 'Match', 'Once')));
+                       
+            %% Use the first contour channel. If there is no contour channel, continue.
+            if length(contourChannel) > 1;
+                contourChannel = contourChannel(1);
+                
+            elseif isempty(contourChannel)
+                continue
+            
+            end % if
+
+            %% Get the movie images.
+            qdotImage = zeros(1, ySize*xSize, tSize);
+            contourImage = false(1, ySize*xSize, tSize);
+
+            for t = 1:tSize;
+                % Get the qdot image.
+                qdotSlice = double(...
+                    xDataSet.GetDataVolumeAs1DArrayShorts(qdotChannel - 1, t - 1));
+                qdotImage(:, :, t) = qdotSlice;
+
+                % Get the contour slice.
+                contourSlice = logical(...
+                    xDataSet.GetDataVolumeAs1DArrayShorts(contourChannel - 1, t - 1));
+                contourImage(:, :, t) = contourSlice;
+            end % for t
+
+            qdotImage = rot90(reshape(qdotImage, [xSize, ySize, tSize]), 1);
+            contourImage = rot90(reshape(contourImage, [xSize, ySize, tSize]), 1);
+
+            %% Crop the images to the cell path.
+            contourProjection = sum(uint8(contourImage), 3) > 0;
+            projectionRgnProps = regionprops(contourProjection, 'BoundingBox');
+            rectPos = [projectionRgnProps.BoundingBox];
+
+            cropXs(1) = max([1, floor(rectPos(1)) - 10]);
+            cropXs(2) = cropXs(1) + floor(rectPos(3)) + 19;
+            cropXs(2) = min([xSize, cropXs(2) + (rem(diff(cropXs), 2) - 1)]);
+
+            cropYs(1) = max([1, floor(rectPos(2)) - 10]);
+            cropYs(2) = cropYs(1) + floor(rectPos(4)) + 19;
+            cropYs(2) = min([ySize, cropYs(2) + (rem(diff(cropYs), 2) - 1)]);
+
+            qdotCropped = qdotImage(cropYs(1):cropYs(2), cropXs(1):cropXs(2), :);
+
+            % Normalize the images to the intensity range in the cell region.
+            qdotRange = [min(qdotCropped(:)) max(qdotCropped(:))];
+            qdotNormalized = (qdotImage - qdotRange(1))/(qdotRange(2) - qdotRange(1));
+
+            %% Expand the contour slightly.
+            contourExpanded = false(size(contourImage));
+            for t = 1:tSize
+                contourDistance = 0.1*bwdist(contourImage(:, :, t));
+                contourExpanded(:, :, t) = contourDistance < 0.25;
+            end % for t
+
+            %% Create a filtering kernel to smooth the data.
+            cKernel = fspecial('gaussian', [7 7], 1);
+
+            %% Detect regional minima and contour the holes.
+            % Contacts segmentation results are stored as the output of
+            % regionprops.
+            cellContacts = cell(1, tSize);
+
+            for t = 1:tSize;    
+                % If the cell is not bound in the frame, continue.
+                tContour = contourExpanded(:, :, t);
+                if ~any(tContour(:))
+                    continue
+                end % if
+                
+                % Filter and detect maxima.
+                tQDot = qdotNormalized(:, :, t);
+                tRgnMin = imregionalmin(imfilter(tQDot, cKernel, 'Symmetric')) & ...
+                    tContour & ...
+                    tQDot < median(tQDot(:));
+                tContacts = regionprops(tRgnMin, 'Area', 'Centroid', 'PixelIdxList');
+
+                % Dilate and contour the seed points.
+                for s = 1:length(tContacts)
+                    % Create the input mask.
+                    sPhi = false(size(tQDot));
+                    sPhi(floor(tContacts(s).Centroid(2)), floor(tContacts(s).Centroid(1))) = 1;
+                    sPhi = imdilate(sPhi, strel('disk', 1));
+
+                    % Contour.
+                    sPhi = activecontour(qdotNormalized(:, :, t), sPhi, 5, 'Chan-Vese', ...
+                        'ContractionBias', 0, ...
+                        'SmoothFactor', 0);
+
+                    % Get the region properties.
+                    sContact = regionprops(sPhi, 'Area', 'Centroid', 'PixelIdxList');
+                    if ~isempty(sContact)
+                        if length(sContact) == 1 && sContact.Area > 5
+                            tContacts(s) = deal(sContact);
+
+                        else % The region has fragmented into sub-regions. Keep the largest region.
+                            idxPrimaryRgn = find([sContact.Area] == max([sContact.Area]), 1);
+                            sContact = sContact(idxPrimaryRgn);
+                            if sContact.Area > 5
+                                tContacts(s) = deal(sContact);
+                            end % if
+
+                        end % if
+                    end % if
+                end % for s
+
+                % Remove the isolated minima.
+                tContacts = tContacts([tContacts.Area] > 5);
+                
+                % Merge overlapping regions. Use 50% overlap as a merge critera.
+                for s = 1:length(tContacts)
+                    % Get the segmentation data.
+                    sProps = tContacts(s);
+
+                    % If we've merged this region already, move on.
+                    if isempty(sProps.Centroid)
+                        continue
+                    end % if
+
+                    % Create the list of regions to test. Do not search the
+                    % region itself and do not search regions that have
+                    % been merged with a lower index region.
+                    pIdxs = 1:length(tContacts);
+                    pIdxs(s) = nan;
+                    pIdxs(arrayfun(@(s)isempty(s.Centroid), tContacts)) = nan;
+                    pIdxs(isnan(pIdxs)) = [];
+                    
+                    % Check each target for overlap.
+                    for p = pIdxs
+                        % Get the overlapping pixels.
+                        pProps = tContacts(p);
+                        idxOverlap = ismember(sProps.PixelIdxList, pProps.PixelIdxList);
+
+                        if ~any(idxOverlap(:))
+                            continue
+
+                        else
+                            % Quantify the overlap.
+                            oMask = false(size(sPhi));
+                            oMask(sProps.PixelIdxList(idxOverlap)) = 1;
+                            oProps = regionprops(oMask, 'Area');
+                            oArea = sum([oProps.Area]);
+                            
+                            % Determine whether to merge.
+                            if oArea/sProps.Area >= 0.5 || oArea/pProps.Area >= 0.5
+                                % Create the merged region.
+                                cMask = false(size(sPhi));
+                                cMask([sProps.PixelIdxList; pProps.PixelIdxList]) = 1;
+                                sProps = regionprops(cMask, 'Area', 'Centroid', 'PixelIdxList');
+                                
+                                % Delete the centroid data for the region
+                                % we merged in, so we skip over it when we
+                                % reach it in the loop.
+                                if s < p
+                                    % The p-index region is now merged into the
+                                    % s-index region. Remove the centroid value for p
+                                    % and update s.
+                                    tContacts(p).Centroid = [];
+                                    tContacts(s) = sProps;
+                                    
+                                else
+                                    % The s-index region is now merged into
+                                    % the p-index region. Remove the
+                                    % centroid value for s and update p.
+                                    % Break out of the p loop, as s is now
+                                    % invalid.
+                                    tContacts(p) = sProps;
+                                    tContacts(s).Centroid = [];
+                                    break
+                                                                        
+                                end % if
+                            end % if
+
+                        end %if
+                    end % for p
+                end % for s
+                
+                % Remove the regions that are now merged into other regions.
+                mergedRgnIdxs = arrayfun(@(s)isempty(s.Centroid), tContacts);
+                tContacts(mergedRgnIdxs) = [];
+                
+                % Assign Spot IDs to match Imaris and add to contact cell
+                % array.
+                rgnCount = sum(cellfun(@length, cellContacts));
+                iSpotIDs = num2cell(rgnCount:rgnCount + length(tContacts) - 1);
+                [tContacts.ID] = deal(iSpotIDs{:});
+                cellContacts{t} = tContacts;
+                
+                % Create the all-contacts mask.
+                tMask = false(size(tQDot));
+                tMask(vertcat(tContacts.PixelIdxList)) = true;
+                
+                % Display the slice.
+                cla(axesContours)
+                imshow(ind2rgb(gray2ind(tQDot, 256), colorramp('o', 256, 'k')), ...
+                    'Parent', axesContours)
+                % imshow(tQDot, [], 'Parent', axesContours)
+                set(axesContours, 'NextPlot', 'Add')
+                
+                % Draw the cell border.
+                contour(axesContours, contourExpanded(:, :, t), [1 1], 'Color', [0 0.5 1])
+                
+                % Draw the new regions on the preview image.
+                contour(axesContours, tMask > 0, [1 1], 'g')
+
+                title(axesContours, ['Time point ' num2str(t) ' of ' num2str(tSize)], ...
+                    'Color', 'w')
+                drawnow
+            end % for t
+
+            % Save the contact data.
+            save(fullfile(xFolder, ['Contacts ' fFileName, '.mat']), 'cellContacts')
+
+            %% Transfer the contacts to Imaris as spots.
+            % Allocate arrays for the spots.
+            countSpots = sum(cellfun(@length, cellContacts));
+
+            posSpots = zeros(countSpots, 3, 'single');
+            timeSpots = zeros(countSpots, 1, 'int32');
+            radiiSpots = zeros(countSpots, 1, 'single');
+
+            rStart = 1;
+            for t = 1:length(cellContacts)
+                tContacts = cellContacts{t};
+                if isempty(tContacts)
+                    continue
+                end % if
+                
+                tSpotCount = length(tContacts);
+                rEnd = rStart + tSpotCount - 1;
+
+                posXYImaris = 0.1*(vertcat(tContacts.Centroid));
+                posXYImaris(:, 2) = yMax - posXYImaris(:, 2);
+                posSpots(rStart:rEnd, 1:2) = posXYImaris;
+                posSpots(rStart:rEnd, 3) = 0.5;
+                timeSpots(rStart:rEnd) = t - 1;
+                radiiSpots(rStart:rEnd) = 0.1*sqrt([tContacts.Area]/pi);
+
+                rStart = rStart + tSpotCount;
+            end % for t
+
+            % Create and place the spots object.
+            xSpots = xImarisApp.GetFactory.CreateSpots;
+            xSpots.Set(posSpots, timeSpots, radiiSpots);
+            xSpots.SetName('Contacts')
+            xSpots.SetColorRGBA(rgbtripleto24bit([0 0.5 1]))
+            xImarisApp.GetSurpassScene.AddChild(xSpots, -1)
+
+            %% Save the processed file.
+            xImarisApp.FileSave(fullfile(xFolder, xFiles(f).name), 'writer="Imaris5"')
+            
+            %% Update the status bar and estimate the time required to finish.
+            timeElapsed = datenum(datetime('now')) - fStartTime(1);
+            completionEstimate = datestr(datenum(datetime('now')) + ...
+                timeElapsed/f*(length(xFiles) - f), 'HH:MM PM');
+            
+            hStatus.setText(['Processing: ' fFileName ' | Estimated finish: ' completionEstimate])
+            hStatus.ProgressBar.setValue(f)
+        end % for f
+        
+        %% Reset the status bar.
+        hStatus.setText('Finished processing folder')
+        hStatus.ProgressBar.setValue(0)
+        hStatus.ProgressBar.setVisible(0)
+    end % pushfolderprocess
+end % contactsegmentationautomation
+
+
+function closecontactautomationfcn(guiContactSegmentation, ~)
+    % CLOSECONTACTAUTOMATIONFCN Close the GUI and figure window
+    %
+    %
+
+    %% Close the image display figure if open, the close the gui figure.
+    figContours = getappdata(guiContactSegmentation, 'figContours');
+    if ishandle(figContours)
+        delete(figContours)
+    end % if
+    
+    delete(guiContactSegmentation)
+end % closecontactautomationfcn
+##### SOURCE END #####
+--></body></html>
