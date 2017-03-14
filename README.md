@@ -7,7 +7,7 @@ There are two main components to the files within:
 1) The Lattice Light Sheet Microscopy analysis pipeline (CropTiffGUI, FractalDimensionThroughTime, ProtrusionAnalysis) primarily written by Kyle Marchuk, PhD
 2) The Synaptic Contact Mapping analysis pipeline (Contour, Ndnderizer, segemntationautomation) primarily written by Pete Beemiller, PhD
 
-CropTIFFFUI is a standalone GUI used to crop a series of .tif files in 3D.
+CropTIFFGUI is a standalone GUI used to crop a series of .tif files in 3D.
 ProtrusionAnalysis is a standlone GUI for the main protrusion coverage analysis.
 FractalDimensionThrough time is a simple script to calculate the fractal dimension of each slice of a binary .tif stack.
 
